@@ -23,7 +23,7 @@ public class KatClient extends Thread {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
             String inputLine;
-            while ((inputLine = in.readLine()) != null) {
+            while (clientSocket.isConnected() && (inputLine = in.readLine()) != null) {
                 List<KatClient> clients = KatServer.CLIENTS;
                 synchronized (clients) {
                     System.out.println(inputLine);
