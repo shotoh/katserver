@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.List;
 
 public class KatClient extends Thread {
@@ -23,7 +24,7 @@ public class KatClient extends Thread {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
             String inputLine;
-            while (clientSocket.isConnected() && (inputLine = in.readLine()) != null) {
+            while ((inputLine = in.readLine()) != null) {
                 List<KatClient> clients = KatServer.CLIENTS;
                 synchronized (clients) {
                     System.out.println(inputLine);
@@ -33,11 +34,13 @@ public class KatClient extends Thread {
                     }
                 }
             }
-
-            KatServer.CLIENTS.remove(this);
-            in.close();
-            out.close();
-            clientSocket.close();
+            close();
+        } catch (SocketException e) {
+            try {
+                close();
+            } catch (IOException ex) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -47,5 +50,12 @@ public class KatClient extends Thread {
         if (this.isAlive() && out != null) {
             out.println(s);
         }
+    }
+
+    public void close() throws IOException {
+        KatServer.CLIENTS.remove(this);
+        in.close();
+        out.close();
+        clientSocket.close();
     }
 }

@@ -11,7 +11,7 @@ public class KatServer {
 
     public static void main(String[] args) {
         int count = 0;
-        try (ServerSocket serverSocket = new ServerSocket(-1)) {
+        try (ServerSocket serverSocket = new ServerSocket(Integer.parseInt(System.getenv("KAT_PORT")))) {
             System.out.println("Server socket established");
             System.out.println("Waiting for connections...");
             while (true) {
